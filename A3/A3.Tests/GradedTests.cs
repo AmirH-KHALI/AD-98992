@@ -31,7 +31,6 @@ namespace A3.Tests
         [TestMethod(), /**/Timeout(30000)/**/]
         public void SolveTest_Q4FriendSuggestion()
         {
-            Assert.Inconclusive();
             RunTest(new Q4FriendSuggestion("TD4"));
         }
 

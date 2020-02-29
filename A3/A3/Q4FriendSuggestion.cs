@@ -16,39 +16,53 @@ namespace A3
 
         public long[] Solve(long nodeCount, long edgeCount, 
                               long[][] edges, long queriesCount, 
-                              long[][]queries) {
+                              long[][] queries) {
             
             long[] ans = new long[queries.Length];
-            long[,] dist = new long[nodeCount, nodeCount];
+            List<Tuple<long, long>>[] adj = new List<Tuple<long, long>>[nodeCount];
             for (int i = 0; i < nodeCount; ++i) {
-                for (int j = 0; j < nodeCount; ++j) {
-                    dist[i, j] = int.MaxValue;
-                    if (i == j) dist[i, j] = 0;
-                }
+                adj[i] = new List<Tuple<long, long>>();
             }
 
             for (int i = 0; i < edges.Length; ++i) {
-                edges[i][0]--;
-                edges[i][1]--;
-                dist[edges[i][0], edges[i][1]] = edges[i][2];
+                adj[edges[i][0] - 1].Add(new Tuple<long, long>(edges[i][1] - 1, edges[i][2]));
             }
 
-            for (int i = 0; i < nodeCount; ++i) {
-                for (int j = 0; j < nodeCount; ++j) {
-                    for (int k = 0; k < nodeCount; ++k) {
-                        if (dist[j, k] > dist[j, i] + dist[i, k]) {
-                            dist[j, k] = dist[j, i] + dist[i, k];
-                        }
-                    }
-                }
-            }
-            
             for (int i = 0; i < queries.Length; ++i) {
                 queries[i][0]--;
                 queries[i][1]--;
-                ans[i] = dist[queries[i][0], queries[i][1]];
+                ans[i] = dijkstra(queries[i][0], queries[i][1], adj, nodeCount);
             }
             return ans;
+        }
+        private long dijkstra(long startNode, long endNode, List<Tuple<long, long>>[] adj, long nodeCount) {
+
+            long[] dist = new long[nodeCount];
+            bool[] mark = new bool[nodeCount];
+            SortedSet<Tuple<long, long>> s = new SortedSet<Tuple<long, long>>();
+
+            for (int i = 0; i < nodeCount; ++i) {
+                if (i == startNode) dist[i] = 0;
+                else dist[i] = long.MaxValue;
+                s.Add(new Tuple<long, long>(dist[i], i));
+            }
+
+            while (s.Count > 0) {
+                Tuple<long, long> current = s.Min();
+                s.Remove(s.Min());
+                if (current.Item1 == long.MaxValue) break;
+                for (long i = 0; i < adj[current.Item2].Count; ++i) {
+                    Tuple<long, long> child = adj[current.Item2][(int)i];
+                    if (!mark[child.Item1] && dist[child.Item1] > current.Item1 + child.Item2) {
+                        s.Remove(new Tuple<long, long>(dist[child.Item1], child.Item1));
+                        dist[child.Item1] = current.Item1 + child.Item2;
+                        s.Add(new Tuple<long, long>(dist[child.Item1], child.Item1));
+                    }
+                }
+            }
+
+            if (dist[endNode] == long.MaxValue) dist[endNode] = -1;
+            return dist[endNode];
         }
     }
 }

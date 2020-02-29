@@ -32,22 +32,21 @@ namespace A3
         private long dijkstra(long startNode, long endNode, List<Tuple<long, long>>[] adj, long nodeCount) {
             
             long[] dist = new long[nodeCount];
-            bool[] mark = new bool[nodeCount];
             SortedSet<Tuple<long, long>> s = new SortedSet<Tuple<long, long>>();
 
             for (int i = 0; i < nodeCount; ++i) {
                 if (i == startNode) dist[i] = 0;
-                else dist[i] = long.MaxValue;
+                else dist[i] = int.MaxValue;
                 s.Add(new Tuple<long, long>(dist[i], i));
             }
 
             while (s.Count > 0) {
                 Tuple<long, long> current = s.Min();
                 s.Remove(s.Min());
-                if (current.Item1 == long.MaxValue) break;
+                //if (current.Item1 == long.MaxValue) break;
                 for (long i = 0; i < adj[current.Item2].Count; ++i) {
                     Tuple<long, long> child = adj[current.Item2][(int)i];
-                    if (!mark[child.Item1] && dist[child.Item1] > current.Item1 + child.Item2) {
+                    if (dist[child.Item1] > current.Item1 + child.Item2) {
                         s.Remove(new Tuple<long, long>(dist[child.Item1], child.Item1));
                         dist[child.Item1] = current.Item1 + child.Item2;
                         s.Add(new Tuple<long, long>(dist[child.Item1], child.Item1));
@@ -55,7 +54,7 @@ namespace A3
                 }
             }
 
-            if (dist[endNode] == long.MaxValue) dist[endNode] = -1;
+            if (dist[endNode] == int.MaxValue) dist[endNode] = -1;
             return dist[endNode];
         }
     }

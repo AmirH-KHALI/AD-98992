@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TestCommon;
+using Priority_Queue;
 
 namespace A3
 {
     public class Q4FriendSuggestion:Processor
     {
         public Q4FriendSuggestion(string testDataName) : base(testDataName) {
-
-            ExcludeTestCaseRangeInclusive(1, 48);
+            //ExcludeTestCaseRangeInclusive(31, 50);
         }
 
         public override string Process(string inStr) =>
@@ -24,6 +24,7 @@ namespace A3
             long[] ans = new long[queries.Length];
             List<Tuple<long, long>>[] adj = new List<Tuple<long, long>>[nodeCount];
             List<Tuple<long, long>>[] radj = new List<Tuple<long, long>>[nodeCount];
+
             for (int i = 0; i < nodeCount; ++i) {
                 adj[i] = new List<Tuple<long, long>>();
                 radj[i] = new List<Tuple<long, long>>();
@@ -34,69 +35,94 @@ namespace A3
                 radj[edges[i][1] - 1].Add(new Tuple<long, long>(edges[i][0] - 1, edges[i][2]));
             }
 
+            long[] distStart = new long[nodeCount];
+            long[] distEnd = new long[nodeCount];
+
+            SimplePriorityQueue<long> minHeapStart = new SimplePriorityQueue<long>();
+            SimplePriorityQueue<long> minHeapEnd = new SimplePriorityQueue<long>();
+
+
+            List<long> markStart = new List<long>();
+            List<long> markEnd = new List<long>();
+
+
             for (int i = 0; i < queries.Length; ++i) {
                 queries[i][0]--;
                 queries[i][1]--;
-                ans[i] = dijkstra(queries[i][0], queries[i][1], adj, radj, nodeCount);
+                ans[i] = Dijkstra(queries[i][0],
+                                  queries[i][1],
+                                  adj,
+                                  radj,
+                                  nodeCount,
+                                  distStart,
+                                  distEnd,
+                                  minHeapStart,
+                                  minHeapEnd,
+                                  markStart,
+                                  markEnd);
             }
             return ans;
         }
-        private long dijkstra(long startNode, long endNode, List<Tuple<long, long>>[] adj, 
-                              List<Tuple<long, long>>[] radj, long nodeCount) {
+        private long Dijkstra(long startNode, long endNode, 
+                            List<Tuple<long, long>>[] adj, List<Tuple<long, long>>[] radj, long nodeCount,
+                            long[] distStart, long[] distEnd,
+                            SimplePriorityQueue<long> minHeapStart, SimplePriorityQueue<long> minHeapEnd,
+                            List<long> markStart, List<long> markEnd) {
 
-            long[] distStart = new long[nodeCount];
-            long[] distEnd = new long[nodeCount];
-            SortedSet<Tuple<long, long>> minHeapStart = new SortedSet<Tuple<long, long>>();
-            SortedSet<Tuple<long, long>> minHeapEnd = new SortedSet<Tuple<long, long>>();
-
-            bool[] markStart = new bool[nodeCount];
-            bool[] markEnd = new bool[nodeCount];
+            minHeapStart.Clear();
+            minHeapEnd.Clear();
+            markStart.Clear();
+            markEnd.Clear();
 
             for (int i = 0; i < nodeCount; ++i) {
                 distEnd[i] = int.MaxValue;
                 distStart[i] = int.MaxValue;
                 if (i == endNode) distEnd[i] = 0;
                 if (i == startNode) distStart[i] = 0;
-                minHeapEnd.Add(new Tuple<long, long>(distEnd[i], i));
-                minHeapStart.Add(new Tuple<long, long>(distStart[i], i));
+                minHeapEnd.Enqueue(i, distEnd[i]);
+                minHeapStart.Enqueue(i, distStart[i]);
             }
 
             while (minHeapStart.Count > 0 && minHeapEnd.Count > 0) {
                 
-                Tuple<long, long> current = minHeapStart.Min();
-                markStart[current.Item2] = true;
-                minHeapStart.Remove(minHeapStart.Min());
-                for (long i = 0; i < adj[current.Item2].Count; ++i) {
-                    Tuple<long, long> child = adj[current.Item2][(int)i];
-                    if (distStart[child.Item1] > current.Item1 + child.Item2) {
-                        minHeapStart.Remove(new Tuple<long, long>(distStart[child.Item1], child.Item1));
-                        distStart[child.Item1] = current.Item1 + child.Item2;
-                        minHeapStart.Add(new Tuple<long, long>(distStart[child.Item1], child.Item1));
+                long current = minHeapStart.Dequeue();
+                markStart.Add(current);
+                for (long i = 0; i < adj[current].Count; ++i) {
+                    Tuple<long, long> child = adj[current][(int)i];
+                    if (distStart[child.Item1] > distStart[current] + child.Item2) {
+                        distStart[child.Item1] = distStart[current] + child.Item2;
+                        minHeapStart.UpdatePriority(child.Item1, distStart[child.Item1]);
                     }
                 }
 
-                if (markEnd[current.Item2]) break;
+                if (markEnd.Contains(current)) break;
 
-                current = minHeapEnd.Min();
-                markEnd[current.Item2] = true;
-                minHeapEnd.Remove(minHeapEnd.Min());
-                for (long i = 0; i < radj[current.Item2].Count; ++i) {
-                    Tuple<long, long> child = radj[current.Item2][(int)i];
-                    if (distEnd[child.Item1] > current.Item1 + child.Item2) {
-                        minHeapEnd.Remove(new Tuple<long, long>(distEnd[child.Item1], child.Item1));
-                        distEnd[child.Item1] = current.Item1 + child.Item2;
-                        minHeapEnd.Add(new Tuple<long, long>(distEnd[child.Item1], child.Item1));
+                current = minHeapEnd.Dequeue();
+                markEnd.Add(current);
+                for (long i = 0; i < radj[current].Count; ++i) {
+                    Tuple<long, long> child = radj[current][(int)i];
+                    if (distEnd[child.Item1] > distEnd[current] + child.Item2) {
+                        distEnd[child.Item1] = distEnd[current] + child.Item2;
+                        minHeapEnd.UpdatePriority(child.Item1, distEnd[child.Item1]);
                     }
                 }
 
-                if (markStart[current.Item2]) break;
+                if (markStart.Contains(current)) break;
             }
 
             long ans = int.MaxValue;
-            for (int i = 0; i < nodeCount; ++i) {
-                if(distStart[i] < int.MaxValue && distEnd[i] < int.MaxValue &&
-                    distStart[i] + distEnd[i] < ans) {
-                    ans = distStart[i] + distEnd[i];
+            for (int i = 0; i < markStart.Count; ++i) {
+                long j = markStart[i];
+                if(distStart[j] < int.MaxValue && distEnd[j] < int.MaxValue &&
+                    distStart[j] + distEnd[j] < ans) {
+                    ans = distStart[j] + distEnd[j];
+                }
+            }
+            for (int i = 0; i < markEnd.Count; ++i) {
+                long j = markEnd[i];
+                if (distStart[j] < int.MaxValue && distEnd[j] < int.MaxValue &&
+                    distStart[j] + distEnd[j] < ans) {
+                    ans = distStart[j] + distEnd[j];
                 }
             }
             if (ans == int.MaxValue) ans = -1;

@@ -30,7 +30,7 @@ namespace A5.Tests
         }
 
         // [TestMethod(), Timeout(1400)]
-        [TestMethod(), /**Timeout(2000)/**/]
+        [TestMethod(), /**/Timeout(2000)/**/]
         public void SolveTest_Q4SuffixTree()
         {
             RunTest(new Q4SuffixTree("TD4"));

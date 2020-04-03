@@ -12,7 +12,7 @@ namespace A5
     {
         public Q5ShortestNonSharedSubstring(string testDataName) : base(testDataName)
         {
-            ExcludeTestCaseRangeInclusive(1, 36);
+            //ExcludeTestCaseRangeInclusive(1, 36);
         }
 
         public override string Process(string inStr) =>

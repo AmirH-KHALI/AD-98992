@@ -8,6 +8,7 @@ namespace Exam1
     {
         public static void Main(string[] args)
         {
+            new Q3SeamCarving1("TD3.1");
         }
 
         //public string[] Solve(string[] data)

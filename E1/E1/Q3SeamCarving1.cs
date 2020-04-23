@@ -228,7 +228,6 @@ namespace Exam1
     public class Q3SeamCarving3 : Processor // Remove Seam
     {
         public Q3SeamCarving3(string testDataName) : base(testDataName) {
-            ExcludeTestCaseRangeInclusive(2, 2);
         }
 
         public override string Process(string inStr) =>

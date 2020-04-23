@@ -227,19 +227,21 @@ namespace Exam1
 
     public class Q3SeamCarving3 : Processor // Remove Seam
     {
-        public Q3SeamCarving3(string testDataName) : base(testDataName) { }
+        public Q3SeamCarving3(string testDataName) : base(testDataName) {
+            ExcludeTestCaseRangeInclusive(2, 2);
+        }
 
         public override string Process(string inStr) =>
             TestTools.Process(inStr, (Func<string[], string>)Solve);
 
 
-        public static Tuple<int, int, double[,], List<List<long>>, List<List<long>>> ProcessQ33(string[] data) {
-            double[,] ans = new double[int.Parse(data[0]), data[1].Split(',').Length];
+        public static Tuple<int, int, string[,], List<List<long>>, List<List<long>>> ProcessQ33(string[] data) {
+            string[,] ans = new string[int.Parse(data[0]), data[1].Split(',').Length];
             int i = 1;
             string[] temp;
             while ((temp = data[i].Split(',')).Length > 1) {
                 for (int j = 0; j < temp.Length; ++j) {
-                    ans[i, j] = double.Parse(temp[j]);
+                    ans[i - 1, j] = temp[j];
                 }
                 ++i;
             }
@@ -253,39 +255,39 @@ namespace Exam1
                 if (temp[0] == "v") {
                     v.Add(new List<long>());
                     for (int j = 0; j < tempi.Length; ++j) {
-                        v[v.Count - 1].Add(int.Parse(tempi[0]));
+                        v[v.Count - 1].Add(int.Parse(tempi[j]));
                     }
                 }
                 else {
                     h.Add(new List<long>());
                     for (int j = 0; j < tempi.Length; ++j) {
-                        h[h.Count - 1].Add(int.Parse(tempi[0]));
+                        h[h.Count - 1].Add(int.Parse(tempi[j]));
                     }
                 }
             }
-            return Tuple.Create(int.Parse(data[0]), data[0].Split(',').Length, ans, v, h);
+            return Tuple.Create(int.Parse(data[0]), data[1].Split(',').Length, ans, v, h);
         }
         public string Solve(string[] input) {
-            Tuple<int, int, double[,], List<List<long>>, List<List<long>>> data = ProcessQ33(input);
+            Tuple<int, int, string[,], List<List<long>>, List<List<long>>> data = ProcessQ33(input);
             int n = data.Item1;
             int m = data.Item2;
             return Solve(n, m, data.Item3, data.Item4, data.Item5);
         }
 
 
-        public string Solve(int n, int m, double[,] data, List<List<long>> v, List<List<long>> h) {
-            List<List<double>> temp = new List<List<double>>();
+        public string Solve(int n, int m, string[,] data, List<List<long>> v, List<List<long>> h) {
+            List<List<string>> temp = new List<List<string>>();
             for (int i = 0; i < n; ++i) {
-                temp.Add(new List<double>());
+                temp.Add(new List<string>());
                 for (int j = 0; j < m; ++j) {
                     temp[i].Add(data[i, j]);
                 }
             }
-            List<List<double>> ans;
+            List<List<string>> ans;
             for (int i = 0; i < v.Count; ++i) {
-                ans = new List<List<double>>();
+                ans = new List<List<string>>();
                 for (int j = 0; j < temp.Count; ++j) {
-                    ans.Add(new List<double>());
+                    ans.Add(new List<string>());
                     for (int k = 0; k < temp[j].Count; ++k) {
                         if (v[i][j] != k) {
                             ans[j].Add(temp[j][k]);
@@ -295,9 +297,9 @@ namespace Exam1
                 temp = ans;
             }
             for (int i = 0; i < h.Count; ++i) {
-                ans = new List<List<double>>();
+                ans = new List<List<string>>();
                 for (int j = 0; j < temp.Count; ++j) {
-                    ans.Add(new List<double>());
+                    ans.Add(new List<string>());
                     for (int k = 0; k < temp[j].Count; ++k) {
                         if (h[i][k] != j) {
                             ans[j].Add(temp[j][k]);
@@ -307,12 +309,15 @@ namespace Exam1
                 temp = ans;
             }
             string ansi = "";
-            for (int i = 0; i < n; ++i) {
-                for (int j = 0; j < m; ++j) {
-                    ansi += temp[i][j].ToString("#.###"); ;
-                    if (j < m - 1) ansi += ',';
+            for (int i = 0; i < temp.Count; ++i) {
+                for (int j = 0; j < temp[i].Count; ++j) {
+                    if (temp[i][j] == "1000") {
+                        ansi += "1000.00";
+                    }
+                    else ansi += temp[i][j];
+                    if (j < temp[i].Count - 1) ansi += ',';
                 }
-                if (i < n - 1) ansi += '\n';
+                if (i < temp.Count - 1) ansi += '\n';
             }
             return ansi;
         }

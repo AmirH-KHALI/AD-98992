@@ -8,7 +8,8 @@ namespace Exam1
 {
     public class Q2Outbreak : Processor
     {
-        public Q2Outbreak(string testDataName) : base(testDataName) { }
+        public Q2Outbreak(string testDataName) : base(testDataName) {
+        }
 
         public override string Process(string inStr) =>
             TestTools.Process(inStr, (Func<string[], string>)Solve);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TestCommon;
+using Priority_Queue;
 
 namespace Exam1
 {
@@ -39,7 +40,60 @@ namespace Exam1
         }
         public double Solve(int N, int M, int[,] carrier, int[,] safe)
         {
-            throw new NotImplementedException();
+            List<long>[] points = new List<long>[2];
+            points[0] = new List<long>();
+            points[1] = new List<long>();
+            for (int i = 0; i < N; ++i) {
+                points[0].Add((long)carrier[i, 0]);
+                points[1].Add((long)carrier[i, 1]);
+            }
+            for (int i = 0; i < M; ++i) {
+                points[0].Add(safe[i, 0]);
+                points[1].Add(safe[i, 1]);
+            }
+
+            return prim(M + N, points[0].ToArray(), points[1].ToArray());
+        }
+
+        private double prim(long pointCount, long[] X, long[] Y) {
+
+            double ans = 0;
+
+            double[] dist = new double[pointCount];
+            bool[] mark = new bool[pointCount];
+
+            SimplePriorityQueue<long> q = new SimplePriorityQueue<long>();
+
+            for (int i = 0; i < pointCount; ++i) {
+                if (i == 0) dist[i] = 0;
+                else dist[i] = int.MaxValue;
+                q.Enqueue(i, (float)dist[i]);
+            }
+
+            while (q.Count > 0) {
+                long cPoint = q.Dequeue();
+                mark[cPoint] = true;
+
+                ans = Math.Max(ans, dist[cPoint]);
+
+                for (int i = 0; i < X.Length; ++i) {
+                    if (!mark[i]) {
+                        dist[i] = Math.Min(dist[i], distBetween(cPoint, i, X, Y));
+                        q.UpdatePriority(i, (float)dist[i]);
+                    }
+                }
+            }
+
+            return double.Parse(ans.ToString("#.######"));
+
+        }
+
+        private double distBetween(long x, int y, long[] X, long[] Y) {
+            long first2 = X[x] - X[y];
+            first2 *= first2;
+            long second2 = Y[x] - Y[y];
+            second2 *= second2;
+            return Math.Sqrt(first2 + second2);
         }
     }
 }

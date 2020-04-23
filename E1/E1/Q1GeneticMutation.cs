@@ -16,7 +16,20 @@ namespace Exam1
 
         public string Solve(string firstDNA, string secondDNA)
         {
-            throw new NotImplementedException();
+            if (firstDNA.Length != secondDNA.Length) return "-1";
+            for (int i = 0; i < firstDNA.Length; ++i) {
+                bool areEq = true;
+                for (int j = 0; j < secondDNA.Length; ++j) {
+                    if (firstDNA[j] != secondDNA[(i + j) % secondDNA.Length]) {
+                        areEq = false;
+                        break;
+                    }
+                }
+                if (areEq) {
+                    return "1";
+                }
+            }
+            return "-1";
         }
     }
 }

@@ -295,28 +295,35 @@ namespace Exam1
                 }
                 temp = ans;
             }
+            List<List<string>> tempi = new List<List<string>>();
+            for (int i = 0; i < temp[0].Count; ++i) {
+                tempi.Add(new List<string>());
+                for (int j = 0; j < temp.Count; ++j) {
+                    tempi[i].Add(temp[j][i]);
+                }
+            }
             for (int i = 0; i < h.Count; ++i) {
                 ans = new List<List<string>>();
-                for (int j = 0; j < temp.Count; ++j) {
+                for (int j = 0; j < tempi.Count; ++j) {
                     ans.Add(new List<string>());
-                    for (int k = 0; k < temp[j].Count; ++k) {
-                        if (h[i][k] != j) {
-                            ans[j].Add(temp[j][k]);
+                    for (int k = 0; k < tempi[j].Count; ++k) {
+                        if (h[i][j] != k) {
+                            ans[j].Add(tempi[j][k]);
                         }
                     }
                 }
-                temp = ans;
+                tempi = ans;
             }
             string ansi = "";
-            for (int i = 0; i < temp.Count; ++i) {
-                for (int j = 0; j < temp[i].Count; ++j) {
-                    if (temp[i][j] == "1000") {
+            for (int i = 0; i < tempi[0].Count; ++i) {
+                for (int j = 0; j < tempi.Count; ++j) {
+                    if (tempi[j][i] == "1000") {
                         ansi += "1000.00";
                     }
-                    else ansi += temp[i][j];
-                    if (j < temp[i].Count - 1) ansi += ',';
+                    else ansi += tempi[j][i];
+                    if (j < tempi.Count - 1) ansi += ',';
                 }
-                if (i < temp.Count - 1) ansi += '\n';
+                if (i < tempi[0].Count - 1) ansi += '\n';
             }
             return ansi;
         }

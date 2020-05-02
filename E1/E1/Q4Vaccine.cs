@@ -9,7 +9,7 @@ namespace Exam1
     public class Q4Vaccine : Processor
     {
         public Q4Vaccine(string testDataName) : base(testDataName) {
-            //ExcludeTestCaseRangeInclusive(70, 75);
+            //ExcludeTestCaseRangeInclusive(1, 64);
             //ExcludeTestCaseRangeInclusive(5, 106);
         }
 
@@ -36,16 +36,16 @@ namespace Exam1
             long[] pm  = find(text , order , pattern , lcp );
             long[] rpm = find(rtext, rorder, rpattern, rlcp);
             
-            string ans = "";
+            StringBuilder ans = new StringBuilder();
 
             for (int i = 0; i < text.Length - pattern.Length; ++i) {
                 if (pm[i] + rpm[text.Length - i - pattern.Length - 1] + 1 >= pattern.Length) {
-                    ans += i + " ";
+                    ans.Append(i + " ");
                 }
             }
 
-            if (ans.Length == 0) ans += "No Match!";
-            return ans;
+            if (ans.Length == 0) ans.Append("No Match!");
+            return ans.ToString();
         }
 
         private long[] buildLCP(string s, long[] order) {

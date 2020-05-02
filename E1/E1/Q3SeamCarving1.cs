@@ -56,7 +56,7 @@ namespace Exam1
         }
 
 
-        public double[,] Solve(int n, int m, Pixel[,] data) {
+        public static double[,] Solve(int n, int m, Pixel[,] data) {
             double[,] ans = new double[n, m];
             for (int i = 0; i < n; ++i) {
                 for (int j = 0; j < m; ++j) {

@@ -9,7 +9,7 @@ namespace Exam1
     public class Q4Vaccine : Processor
     {
         public Q4Vaccine(string testDataName) : base(testDataName) {
-            //ExcludeTestCaseRangeInclusive(1, 5);
+            //ExcludeTestCaseRangeInclusive(1, 64);
             //ExcludeTestCaseRangeInclusive(5, 106);
         }
 
@@ -18,142 +18,134 @@ namespace Exam1
 
         public string Solve(string text, string pattern)
         {
-            text += '$';
-            text = buildBWT(text);
+            char[] charArray = text.ToCharArray();
+            Array.Reverse(charArray);
+            string rtext = new string(charArray) + "$";
+            text += "$";
 
-            List<BWT_Item> bwt = new List<BWT_Item>(text.Length);
-            for (int i = 0; i < text.Length; ++i) {
-                bwt.Add(new BWT_Item(text[i], i));
+            charArray = pattern.ToCharArray();
+            Array.Reverse(charArray);
+            string rpattern = new string(charArray);
+
+            long[] order  = getSuffixArray(text );
+            long[] rorder = getSuffixArray(rtext);
+
+            long[] lcp  = buildLCP(text , order );
+            long[] rlcp = buildLCP(rtext, rorder);
+
+            long[] pm  = find(text , order , pattern , lcp );
+            long[] rpm = find(rtext, rorder, rpattern, rlcp);
+            
+            StringBuilder ans = new StringBuilder();
+
+            for (int i = 0; i < text.Length - pattern.Length; ++i) {
+                if (pm[i] + rpm[text.Length - i - pattern.Length - 1] + 1 >= pattern.Length) {
+                    ans.Append(i + " ");
+                }
             }
-            IEnumerable<BWT_Item> sortedBWT = bwt.OrderBy(bwtItem => bwtItem.firstColumnChar);
 
-            {
-                int j = 0;
-                foreach (BWT_Item bwtItem in sortedBWT) {
-                    bwt[j] = bwtItem;
+            if (ans.Length == 0) ans.Append("No Match!");
+            return ans.ToString();
+        }
+
+        private long[] buildLCP(string s, long[] order) {
+            int n = s.Length, k = 0;
+            long[] lcp = new long[n];
+            long[] rank = new long[n];
+
+            for (int i = 0; i < n; ++i) rank[order[i]] = i;
+
+            for (int i = 0; i < n; ++i) {
+                if (rank[i] == n - 1) { k = 0; continue; }
+                int j = (int)order[rank[i] + 1];
+                while (i + k < n && j + k < n && s[i + k] == s[j + k]) k++;
+                lcp[rank[i]] = k;
+                if (k != 0) k--;
+            }
+            return lcp;
+        }
+
+
+        private long[] find(string text, long[] order, string pattern, long[] lcp) {
+            long[] ans = new long[text.Length];
+            for (int i = 0, j = 0; i < order.Length; ++i) {
+                if (i > 0) j = Math.Min(j, (int)lcp[i - 1]);
+                while (j < pattern.Length && order[i] + j < text.Length && pattern[j] == text[(int)order[i] + j]) {
                     j++;
                 }
-            }
-            for (int i = 0; i < bwt.Count; ++i) {
-                bwt[bwt[i].lastColumnIndex].firstColumnIndex = i;
-                bwt[bwt[i].lastColumnIndex].lastColumnChar = bwt[i].firstColumnChar;
-            }
-
-            long[,] count = new long[bwt.Count + 1, 26];
-            for (int i = 1; i < bwt.Count + 1; ++i) {
-                for (int j = 0; j < 26; ++j) {
-                    count[i, j] = count[i - 1, j];
-                    if (bwt[i - 1].lastColumnChar - 'a' == j) {
-                        count[i, j]++;
-                    }
-                }
-            }
-            long[] firstOccurrence = new long[26];
-            for (int i = bwt.Count - 1; i >= 0; --i) {
-                if (bwt[i].firstColumnChar == '$') continue;
-                firstOccurrence[bwt[i].firstColumnChar - 'a'] = i;
-            }
-
-            int current = 0;
-            int num = bwt.Count - 1;
-            do {
-                bwt[current].index = num;
-                num--;
-                current = bwt[current].firstColumnIndex;
-            } while (bwt[current].firstColumnChar != '$');
-
-            List<long> ans = new List<long>();
-            StringBuilder p = new StringBuilder();
-            StringBuilder s = new StringBuilder(pattern);
-            s.Remove(0, 1);
-            for (int i = 0; i < pattern.Length; ++i) {
-                for (int j = 0; j < 26; ++j) {
-                    string mtext = p.ToString() + ((char)((int)j + (int)'a')) + s.ToString();
-                    find(mtext, bwt, firstOccurrence, count, ans);
-                }
-            }
-            ans.Sort();
-            if (ans.Count == 0) {
-                return "No Match!";
-            } else {
-                string ansi = "";
-                foreach (long x in ans) {
-                    ansi += x + " ";
-                }
-                return ansi;
-            }
-
-            /*List<long> ans = new List<long>();
-            StringBuilder p = new StringBuilder();
-            StringBuilder s = new StringBuilder(pattern);
-            s.Remove(0, 1);
-            for (int i = 0; i < pattern.Length; ++i) {
-                for (int j = 0; j < 26; ++j) {
-                    string mtext = p.ToString() + ((char)((int)j + (int)'a')) + s.ToString() + "$" + text;
-   
-                }
-            }*/
-
-        }
-
-        private void find(string pattern, List<BWT_Item> bwt, long[] firstOccurrence, long[,] count, List<long> ans) {
-            int l = 0;
-            int r = bwt.Count - 1;
-            int currentPos = pattern.Length - 1;
-            while (r >= l) {
-                if (currentPos > -1) {
-                    char currentChar = pattern[currentPos];
-                    currentPos--;
-                    l = (int)firstOccurrence[currentChar - 'a']
-                        + (int)count[l, currentChar - 'a'];
-                    r = (int)firstOccurrence[currentChar - 'a']
-                        + (int)count[r + 1, currentChar - 'a'] - 1;
-                    
-                } else {
-                    for (int i = l; i <= r; ++i) {
-                        if (!ans.Contains(bwt[i].index))
-                            ans.Add(bwt[i].index);
-                    }
-                    return;
-                }
-            }
-        }
-
-        public class BWT_Item {
-            public char firstColumnChar;
-            public char lastColumnChar;
-            public int lastColumnIndex;
-            public int firstColumnIndex;
-            public int index;
-
-            public BWT_Item(char myChar, int lastColumnIndex) {
-                this.firstColumnChar = myChar;
-                this.lastColumnIndex = lastColumnIndex;
-            }
-        }
-
-        public string buildBWT (string text) {
-            SuffixHolder[] suffixHolders = new SuffixHolder[text.Length];
-            for (int i = 0; i < text.Length; ++i) {
-                suffixHolders[i] = new SuffixHolder(i, text.Substring(i));
-            }
-            IEnumerable<SuffixHolder> sortedSuffixHolders = suffixHolders.OrderBy(suffixHolder => suffixHolder.suffix);
-
-            string ans = "";
-
-            foreach (SuffixHolder suffixHolder in sortedSuffixHolders) {
-                ans += text[(suffixHolder.index - 1 + text.Length) % text.Length];
+                if (order[i] < text.Length) ans[order[i]] = j;
             }
             return ans;
         }
-        public class SuffixHolder {
-            public int index;
-            public string suffix;
 
-            public SuffixHolder(int index, string suffix) {
-                this.index = index;
-                this.suffix = suffix;
+        private int getIndex(char c) {
+            return c == '$' ? 0 : c - 'a' + 1;
+        }
+
+        private long[] getSuffixArray(string text) {
+            long[] order = new long[text.Length];
+            long[] label = new long[text.Length];
+            charSort(text, order);
+            computeLabels(text, order, label);
+            long l = 1;
+            while (l < text.Length) {
+                order = sortDoubled(l, order, label);
+                label = updateLabels(l, order, label);
+                l *= 2;
             }
+            return order;
+        }
+
+        private void charSort(string text, long[] order) {
+            long[] count = new long[27];
+            for (int i = 0; i < text.Length; ++i) {
+                count[getIndex(text[i])]++;
+            }
+            for (int i = 1; i < count.Length; ++i) {
+                count[i] += count[i - 1];
+            }
+            for (int i = text.Length - 1; i >= 0; --i) {
+                int j = getIndex(text[i]);
+                count[j]--;
+                order[count[j]] = i;
+            }
+        }
+
+        private void computeLabels(string text, long[] order, long[] label) {
+            label[order[0]] = 0;
+            for (int i = 1; i < text.Length; ++i) {
+                label[order[i]] = label[order[i - 1]];
+                if (text[(int)order[i]] != text[(int)order[i - 1]])
+                    label[order[i]]++;
+            }
+        }
+
+        private long[] sortDoubled(long l, long[] order, long[] label) {
+            long[] count = new long[order.Length];
+            for (int i = 0; i < label.Length; ++i) {
+                count[label[i]]++;
+            }
+            for (int i = 1; i < count.Length; ++i) {
+                count[i] += count[i - 1];
+            }
+            long[] newOrder = new long[order.Length];
+            for (int i = order.Length - 1; i >= 0; --i) {
+                long current = (order[i] - l + order.Length) % order.Length;
+                newOrder[--count[label[current]]] = current;
+            }
+            return newOrder;
+        }
+
+        private long[] updateLabels(long l, long[] order, long[] label) {
+            long[] newLabel = new long[label.Length];
+            newLabel[order[0]] = 0;
+            for (int i = 1; i < order.Length; ++i) {
+                newLabel[order[i]] = newLabel[order[i - 1]];
+                if (label[order[i]] != label[order[i - 1]] ||
+                    label[(order[i] + l) % order.Length] != label[(order[i - 1] + l) % order.Length])
+                    newLabel[order[i]]++;
+            }
+            return newLabel;
         }
     }
 }

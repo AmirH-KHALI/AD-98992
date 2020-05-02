@@ -98,14 +98,14 @@ namespace Exam1
             }
             return Tuple.Create(data.Length, data[0].Split(',').Length, ans);
         }
-        public string Solve(string[] input) {
+        public static string Solve(string[] input) {
             Tuple<int, int, double[,]> data = ProcessQ32(input);
             int n = data.Item1;
             int m = data.Item2;
             return Solve(n, m, data.Item3);
         }
 
-        public string Solve(int n, int m, double[,] data)
+        public static string Solve(int n, int m, double[,] data)
         {
             List<long> hor = prim(n, m, data);
             List<long> ver = prim2(n, m, data);
@@ -129,7 +129,7 @@ namespace Exam1
             return ans;
         }
 
-        private List<long> prim2(int n, int m, double[,] data) {
+        private static List<long> prim2(int n, int m, double[,] data) {
 
             double[] dist = new double[n * m];
             bool[] mark = new bool[n * m];
@@ -176,7 +176,7 @@ namespace Exam1
             return ans;
         }
 
-        private List<long> prim(int n, int m, double[,] data) {
+        private static List<long> prim(int n, int m, double[,] data) {
 
             double[] dist = new double[n * m];
             bool[] mark = new bool[n * m];
@@ -234,13 +234,14 @@ namespace Exam1
             TestTools.Process(inStr, (Func<string[], string>)Solve);
 
 
-        public static Tuple<int, int, string[,], List<List<long>>, List<List<long>>> ProcessQ33(string[] data) {
-            string[,] ans = new string[int.Parse(data[0]), data[1].Split(',').Length];
+        public static Tuple<List<List<string>>, List<List<long>>, List<List<long>>> ProcessQ33(string[] data) {
+            List<List<string>> ans = new List<List<string>>();
             int i = 1;
             string[] temp;
             while ((temp = data[i].Split(',')).Length > 1) {
+                ans.Add(new List<string>());
                 for (int j = 0; j < temp.Length; ++j) {
-                    ans[i - 1, j] = temp[j];
+                    ans[i - 1].Add( temp[j]);
                 }
                 ++i;
             }
@@ -264,24 +265,27 @@ namespace Exam1
                     }
                 }
             }
-            return Tuple.Create(int.Parse(data[0]), data[1].Split(',').Length, ans, v, h);
+            return Tuple.Create(ans, v, h);
         }
         public string Solve(string[] input) {
-            Tuple<int, int, string[,], List<List<long>>, List<List<long>>> data = ProcessQ33(input);
-            int n = data.Item1;
-            int m = data.Item2;
-            return Solve(n, m, data.Item3, data.Item4, data.Item5);
+            Tuple<List<List<string>>, List<List<long>>, List<List<long>>> data = ProcessQ33(input);
+            List<List<string>> tempi = Solve(data.Item1, data.Item2, data.Item3);
+            string ansi = "";
+            for (int i = 0; i < tempi[0].Count; ++i) {
+                for (int j = 0; j < tempi.Count; ++j) {
+                    if (tempi[j][i] == "1000") {
+                        ansi += "1000.00";
+                    } else ansi += tempi[j][i];
+                    if (j < tempi.Count - 1) ansi += ',';
+                }
+                if (i < tempi[0].Count - 1) ansi += '\n';
+            }
+            return ansi;
         }
 
 
-        public string Solve(int n, int m, string[,] data, List<List<long>> v, List<List<long>> h) {
-            List<List<string>> temp = new List<List<string>>();
-            for (int i = 0; i < n; ++i) {
-                temp.Add(new List<string>());
-                for (int j = 0; j < m; ++j) {
-                    temp[i].Add(data[i, j]);
-                }
-            }
+        public static List<List<string>> Solve(List<List<string>> temp, List<List<long>> v, List<List<long>> h) {
+            
             List<List<string>> ans;
             for (int i = 0; i < v.Count; ++i) {
                 ans = new List<List<string>>();
@@ -314,18 +318,8 @@ namespace Exam1
                 }
                 tempi = ans;
             }
-            string ansi = "";
-            for (int i = 0; i < tempi[0].Count; ++i) {
-                for (int j = 0; j < tempi.Count; ++j) {
-                    if (tempi[j][i] == "1000") {
-                        ansi += "1000.00";
-                    }
-                    else ansi += tempi[j][i];
-                    if (j < tempi.Count - 1) ansi += ',';
-                }
-                if (i < tempi[0].Count - 1) ansi += '\n';
-            }
-            return ansi;
+            return tempi;
+            
         }
     }
 }

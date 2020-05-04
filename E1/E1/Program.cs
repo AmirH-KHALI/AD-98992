@@ -48,7 +48,7 @@ namespace Exam1 {
                 foreach (string s in temp) {
                     removeList[0].Add(int.Parse(s));
                 }
-                Console.WriteLine(((double)k / 100) + "% " + ansi.Count + " " + ansi[0].Count);
+                Console.WriteLine((((double)k / reduction) * 100) + "% " + ansi.Count + " " + ansi[0].Count);
                 if (direction == 0) {
                     ansi =  customSolve(ansi, removeList, new List<List<long>>());
                     colors = removeColors(colors, removeList, new List<List<long>>());

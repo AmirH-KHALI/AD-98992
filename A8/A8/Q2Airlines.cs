@@ -10,7 +10,7 @@ namespace A8
     public class Q2Airlines : Processor
     {
         public Q2Airlines(string testDataName) : base(testDataName) {
-            ExcludeTestCaseRangeInclusive(1, 3);
+            //ExcludeTestCaseRangeInclusive(1, 3);
         }
 
         public override string Process(string inStr) =>

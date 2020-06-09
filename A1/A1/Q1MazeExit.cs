@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using TestCommon;
+using System.Linq;
+using Microsoft.SolverFoundation.Solvers;
 
 namespace A1
 {
@@ -12,7 +14,6 @@ namespace A1
             TestTools.Process(inStr, (Func<long, long[][], long, long, long>)Solve);
 
         public long Solve(long nodeCount, long[][] edges, long StartNode, long EndNode) {
-            return 10;
             bool[] mark = new bool[nodeCount];
             List<long>[] adj = new List<long>[nodeCount];
             for (int i = 0; i < adj.Length; ++i) {

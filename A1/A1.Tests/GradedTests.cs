@@ -10,7 +10,7 @@ namespace A1.Tests
         [TestMethod(), Timeout(100)]
         public void SolveTest_Q1MazeExit()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("A1.Q1 Not Solved");
             RunTest(new Q1MazeExit("TD1"));
         }
 

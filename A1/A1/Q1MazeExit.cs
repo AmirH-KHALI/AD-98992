@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using TestCommon;
+using System.Linq;
+using Microsoft.SolverFoundation.Solvers;
 
 namespace A1
 {

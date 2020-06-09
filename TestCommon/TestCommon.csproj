@@ -8,6 +8,7 @@
     <PackageReference Include="GeoCoordinate.NetCore" Version="1.0.0.1" />
     <PackageReference Include="Kingdom.OrTools.ConstraintSolver.Core" Version="5.2.2.16195" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Include="Microsoft.Solver.Foundation" Version="3.1.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
     <PackageReference Include="OptimizedPriorityQueue" Version="4.2.0" />

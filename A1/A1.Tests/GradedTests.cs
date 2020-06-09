@@ -1,13 +1,19 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using A1;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using TestCommon;
 
 namespace A1.Tests
 {
-    [DeploymentItem("TestData")]
+    [DeploymentItem("TestData", "A1_TestData")]
     [TestClass()]
     public class GradedTests
     {
-        [TestMethod(), Timeout(100)]
+        [TestMethod(), Timeout(200)]
         public void SolveTest_Q1MazeExit()
         {
             RunTest(new Q1MazeExit("TD1"));

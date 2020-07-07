@@ -28,7 +28,6 @@ namespace A8.Tests
         [TestMethod(), Timeout(1000)]
         public void SolveTest_Q3Stocks()
         {
-            Assert.Inconclusive();
             RunTest(new Q3Stocks("TD3"));
         }
 

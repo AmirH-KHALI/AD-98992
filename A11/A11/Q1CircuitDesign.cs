@@ -64,8 +64,8 @@ namespace A11
             ans = new long[v];
 
             for (int i = 0; i < c; ++i) {
-                adj[getIndex(-cnf[i][0])].Add(getIndex(cnf[i][1]));
-                adj[getIndex(-cnf[i][1])].Add(getIndex(cnf[i][0]));
+                 adj[getIndex(-cnf[i][0])].Add(getIndex(cnf[i][1]));
+                 adj[getIndex(-cnf[i][1])].Add(getIndex(cnf[i][0]));
 
                 radj[getIndex(cnf[i][1])].Add(getIndex(-cnf[i][0]));
                 radj[getIndex(cnf[i][0])].Add(getIndex(-cnf[i][1]));

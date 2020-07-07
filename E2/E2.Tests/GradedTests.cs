@@ -15,7 +15,7 @@ namespace E2.Tests
             RunTest(new Q1MaxflowVertexCapacity("TD1"));
         }
 
-        [TestMethod(), Timeout(1500)]
+        [TestMethod(), Timeout(10000)]
         public void SolveTest_Q2BoardGame()
         {
             //Assert.Inconclusive("E2.Q2 Not Solved");

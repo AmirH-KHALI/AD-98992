@@ -9,7 +9,7 @@ namespace A8 {
         static void Main(string[] args) {
 
             string[] nm = Console.ReadLine().Split();
-            
+
             long n = int.Parse(nm[0]) + 2;
             long[,] graph = new long[n, n];
             long[,] lowerKeeper = new long[n, n];
@@ -33,7 +33,7 @@ namespace A8 {
                 graph[u, n - 1] += lower;
                 totalLower += lower;
             }
-           
+
             long maxFlow = getMaxFlow(graph, 0, n - 1);
 
             if (maxFlow == totalLower) {
